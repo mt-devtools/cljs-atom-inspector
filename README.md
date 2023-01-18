@@ -24,8 +24,8 @@ You can track the changes of the <strong>cljs-atom-inspector</strong> library [h
 ### How to use?
 
 The [`atom-inspector.api/view`](documentation/cljs/docs/API.md#view)
-Reagent component displays the data stored in a Reagent atom.
-It provides you tools to browse and edit the content of the atom.
+Reagent component displays the data stored in a Reagent atom and it provides you
+tools to browse and edit the content of the atom.
 
 ```
 (def my-atom (reagent.core/atom {:my-data {}}))
@@ -33,3 +33,9 @@ It provides you tools to browse and edit the content of the atom.
 (defn my-atom-inspector []
       [view ::my-atom-inspector {:ref my-atom}])  
 ```
+
+![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view1.png?raw=true)
+
+![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view2.png?raw=true)
+
+![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view3.png?raw=true)
