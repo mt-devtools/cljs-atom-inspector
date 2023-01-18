@@ -19,17 +19,19 @@
   ; https://github.com/bithandshake/pretty-css
   ; https://fonts.google.com/icons
   ;
+  ; The atom-inspector doesn't use the :data-font-size presets of the pretty-css,
+  ; because the pretty-css font size profiles based on the HTML element font-size
+  ; value (REM) and the atom-inspector is only a developer tool, therefore it has
+  ; nothing to do with the REM value in a project!
+  ;
   ; Importing the required CSS styles:
   ; - normalize.min.css
   ; - pretty-css.min.css
   ; - material-symbols.min.css
   ; - Material Symbols icon set (hosted by Google Fonts)
-  [:<> [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "/normalize.min.css"}]
-       [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "/pretty-css.min.css"}]
-       [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "/material-symbols.min.css"}]
+  [:<> [:link {:item-prop "url" :rel "stylesheet" :type "text/css" :href "/normalize.min.css"}]
+       [:link {:item-prop "url" :rel "stylesheet" :type "text/css" :href "/pretty-css.min.css"}]
+       [:link {:item-prop "url" :rel "stylesheet" :type "text/css" :href "/material-symbols.min.css"}]
        [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
                :href "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"}]])
 
@@ -42,7 +44,7 @@
   [inspector-id _]
   (let [inspected-path (helpers/get-inspected-path inspector-id)
         root-level?    (helpers/root-level?        inspector-id)]
-       [:div {:data-font-weight :medium :data-font-size :s :data-line-height :text-block}
+       [:div {:data-font-weight :medium :data-line-height :text-block :style {:font-size "14px"}}
              (if root-level? (-> inspector-id        str)
                              (-> inspected-path last str))]))
 
@@ -51,7 +53,7 @@
   ; @param (map) header-props
   ; {:label (string)(opt)}
   [inspector-id {:keys [label] :as header-props}]
-  [:div {:data-font-weight :medium :data-font-size :xs :data-color :muted :data-line-height :text-block}
+  [:div {:data-font-weight :medium :data-color :muted :data-line-height :text-block :style {:font-size "13px"}}
         (str " > " label)])
 
 (defn- breadcrumbs
@@ -59,9 +61,9 @@
   ; @param (map) header-props
   [inspector-id _]
   (let [inspected-path (helpers/get-inspected-path inspector-id)]
-       [:div {:data-font-weight :medium :data-font-size :xs :data-color :muted :data-line-height :text-block
+       [:div {:data-font-weight :medium :data-color :muted :data-line-height :text-block
               :data-block-height :xl :data-orientation :horizontal :data-vertical-row-align :center
-              :data-fill-color :highlight :data-indent-vertical :xxs}
+              :data-fill-color :highlight :data-indent-vertical :xxs :style {:font-size "13px"}}
              (string/join inspected-path " / ")]))
 
 (defn- header
@@ -95,7 +97,7 @@
          :data-vertical-column-align   :bottom
          :data-selectable              false}
         [:i   {:data-icon-family :material-symbols-outlined :data-icon-size :m} icon]
-        [:pre {:data-font-size :xxs} label]])
+        [:pre {:style {:font-size "12px"}} label]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -184,7 +186,7 @@
   (if-let [raw-view? (helpers/raw-view? inspector-id)]
           (let [inspected-item (helpers/get-inspected-item inspector-id)]
                [:div {:data-indent-top :xxl}
-                     [:pre {:data-font-size :xs :data-fill-color :highlight :data-indent-all :xxs}
+                     [:pre {:data-fill-color :highlight :data-indent-all :xxs :style {:font-size "13px"}}
                            (pretty/mixed->string inspected-item)]])))
 
 (defn- item-editor
@@ -218,7 +220,7 @@
   [inspector-id]
   (let [inspected-item (helpers/get-inspected-item     inspector-id)
         map-keys       (helpers/get-inspected-map-keys inspector-id)]
-       [:pre {:data-font-size :xs}
+       [:pre {:style {:font-size "13px"}}
              [header  inspector-id {:label (str "map, "(count map-keys)" item(s)")}]
              [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
              (if (empty? inspected-item) "Empty")
@@ -234,7 +236,7 @@
        [:div [header  inspector-id {:label (str "vector, " (count inspected-item) " item(s)")}]
              [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
              (if (empty? inspected-item) "Empty")
-             (letfn [(f [%1 %2] (conj %1 [:pre {:data-font-size :xs}
+             (letfn [(f [%1 %2] (conj %1 [:pre {:style {:font-size "13px"}}
                                                (cond (nil?    %2) (str "nil")
                                                      (string? %2) (syntax/quotes %2)
                                                      :return      (str           %2))]))]
@@ -265,7 +267,7 @@
   (let [inspected-item (helpers/get-inspected-item inspector-id)]
        [:div [header  inspector-id {:label (str "string, "(count inspected-item) " char.")}]
              [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
-             [:pre {:style {:white-space :normal} :data-font-size :xs}
+             [:pre {:style {:white-space :normal :font-size "13px"}}
                    (syntax/quotes inspected-item)]
              [item-editor inspector-id]]))
 
@@ -275,7 +277,7 @@
   [:div [header  inspector-id {:label "keyword"}]
         [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
         (let [inspected-item (helpers/get-inspected-item inspector-id)]
-             [:pre {:style {:white-space :normal} :data-font-size :xs}
+             [:pre {:style {:white-space :normal :font-size "13px"}}
                    (str inspected-item)])
         [item-editor inspector-id]])
 
@@ -285,7 +287,7 @@
   [:div [header  inspector-id {:label "symbol"}]
         [toolbar inspector-id go-home-button go-up-button remove-item-button]
         (let [inspected-item (helpers/get-inspected-item inspector-id)]
-             [:pre {:style {:white-space :normal} :data-font-size :xs}
+             [:pre {:style {:white-space :normal :font-size "13px"}}
                    (str inspected-item)])])
 
 (defn- nil-item
@@ -293,7 +295,7 @@
   [inspector-id]
   [:div [header  inspector-id {:label "nil"}]
         [toolbar inspector-id go-home-button go-up-button recycle-item-button edit-item-button]
-        [:pre {:data-font-size :xs} "nil"]
+        [:pre {:style {:font-size "13px"}} "nil"]
         [item-editor inspector-id]])
 
 (defn- unknown-item
@@ -302,7 +304,7 @@
   [:div [header  inspector-id {:label "unknown"}]
         [toolbar inspector-id go-home-button go-up-button remove-item-button]
         (let [inspected-item (helpers/get-inspected-item inspector-id)]
-             [:pre {:style {:white-space :normal} :data-font-size :xs}
+             [:pre {:style {:white-space :normal :font-size "13px"}}
                    (str inspected-item)])])
 
 ;; ----------------------------------------------------------------------------
@@ -325,7 +327,8 @@
 (defn- atom-inspector
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:div {:data-scroll-axis :x :data-indent-all :xs :data-fill-color :default}
+  [:div {:data-scroll-axis :x :data-indent-all :xs :data-fill-color :default
+         :data-theme :light}
         [import-styles]
         [inspected-item inspector-id]])
 
