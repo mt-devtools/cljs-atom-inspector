@@ -25,11 +25,11 @@
   ; - material-symbols.min.css
   ; - Material Symbols icon set (hosted by Google Fonts)
   [:<> [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "https://github.com/bithandshake/pretty-css/blob/release/resources/public/normalize.min.css"}]
+               :href "/normalize.min.css"}]
        [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "https://github.com/bithandshake/pretty-css/blob/release/resources/public/pretty-css.min.css"}]
+               :href "/pretty-css.min.css"}]
        [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
-               :href "https://github.com/bithandshake/pretty-css/blob/release/resources/public/material-symbols.min.css"}]
+               :href "/material-symbols.min.css"}]
        [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
                :href "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"}]])
 
