@@ -24,7 +24,6 @@
   ; - pretty-css.min.css
   ; - material-symbols.min.css
   ; - Material Symbols icon set (hosted by Google Fonts)
-  (re-frame.api/dispatch [:x.db/set-item! [:my-data] {}])
   [:<> [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
                :href "https://github.com/bithandshake/pretty-css/blob/release/resources/public/normalize.min.css"}]
        [:link {:item-prop "url" :rel "stylesheet" :type "text/css"
