@@ -353,4 +353,5 @@
 
   ([inspector-id inspector-props]
    (reagent/create-class {:reagent-render      (fn [] [atom-inspector inspector-id])
-                          :component-did-mount (fn [] (swap! state/INSPECTORS assoc inspector-id inspector-props))})))
+                          :component-did-mount (fn [] (if-not (inspector-id @state/INSPECTORS)
+                                                              (swap!         state/INSPECTORS assoc inspector-id inspector-props)))})))
