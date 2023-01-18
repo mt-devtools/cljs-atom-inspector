@@ -27,6 +27,10 @@ The [`atom-inspector.api/view`](documentation/cljs/atom-inspector/API.md#view)
 Reagent component displays the data stored in a Reagent atom and provides you
 tools to browse and edit the content of the atom.
 
+> This library uses the [`bithandshake/pretty-css`](https://github.com/bithandshake/pretty-css)
+  preset and theme kit. To make the required CSS files available for the atom-inspector,
+  the content of the `resources/public` folder has to be available on the `/` route.
+
 ```
 (def my-atom (reagent.core/atom {:my-data {}}))
 

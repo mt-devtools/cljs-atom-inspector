@@ -20,9 +20,9 @@
   ; https://fonts.google.com/icons
   ;
   ; The atom-inspector doesn't use the :data-font-size presets of the pretty-css,
-  ; because the pretty-css (v0.1.8.8) font size profiles based on the HTML element
-  ; font-size value (REM) and the atom-inspector is only a developer tool, therefore
-  ; it has nothing to do with the REM value in a project!
+  ; because the pretty-css (v0.1.8.8 / 2023.01.18) font size profiles are based
+  ; on the  HTML element font-size value (REM) and the atom-inspector is only
+  ; a developer  tool, therefore it has nothing to do with the REM value in a project!
   ;
   ; Importing the required CSS styles:
   ; - normalize.min.css
