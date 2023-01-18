@@ -23,7 +23,7 @@ You can track the changes of the <strong>cljs-atom-inspector</strong> library [h
 
 ### How to use?
 
-The [`atom-inspector.api/view`](documentation/cljs/docs/API.md#view)
+The [`atom-inspector.api/view`](documentation/cljs/atom-inspector/API.md#view)
 Reagent component displays the data stored in a Reagent atom and provides you
 tools to browse and edit the content of the atom.
 
