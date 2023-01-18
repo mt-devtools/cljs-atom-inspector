@@ -1,9 +1,13 @@
 
 # cljs-atom-inspector documentation
 
-Documentation of the [cljs-atom-inspector](https://github.com/bithandshake/cljs-atom-inspector)library
+Documentation of the [cljs-atom-inspector](https://github.com/bithandshake/cljs-atom-inspector) ClojureScript library
 
 ##### [README](../README.md) > DOCUMENTATION
+
+### ClojureScript namespaces
+
+* [atom-inspector.api](cljs/atom-inspector/API.md)
 
 ---
 
