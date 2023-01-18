@@ -9,8 +9,8 @@ and editing Reagent atoms.
 ### deps.edn
 
 ```
-{:deps {bithandshake/pretty-css {:git/url "https://github.com/bithandshake/cljs-atom-inspector"
-                                 :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}
+{:deps {bithandshake/cljs-atom-inspector {:git/url "https://github.com/bithandshake/cljs-atom-inspector"
+                                          :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}
 ```
 
 ### Current version
