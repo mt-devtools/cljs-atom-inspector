@@ -21,7 +21,7 @@ Check out the latest commit on the [release branch](https://github.com/bithandsh
 
 You can track the changes of the <strong>cljs-atom-inspector</strong> library [here](CHANGES.md).
 
-### How to use?
+# Usage
 
 The [`atom-inspector.api/view`](documentation/cljs/atom-inspector/API.md#view)
 Reagent component displays the data stored in a Reagent atom and provides you
