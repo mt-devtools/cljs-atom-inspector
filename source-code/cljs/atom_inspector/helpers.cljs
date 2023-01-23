@@ -1,8 +1,8 @@
 
 (ns atom-inspector.helpers
     (:require [atom-inspector.state :as state]
-              [candy.api            :refer [return]]
               [map.api              :as map]
+              [noop.api             :refer [return]]
               [vector.api           :as vector]))
 
 ;; ----------------------------------------------------------------------------
