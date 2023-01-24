@@ -4,4 +4,4 @@
          bithandshake/cljc-fruits {:git/url "https://github.com/bithandshake/cljc-fruits"
                                    :sha     "c852db57c672e4fd71d5c23c3bfee095ba75b629"}
          bithandshake/pretty-css  {:git/url "git@github.com:bithandshake/pretty-css"
-                                   :sha     "12f28676990454e4d3838b1d4c0ab875c89ca09a"}}}
+                                   :sha     "e47fff455c4b8efdd0dd5efd0de8bf182a55f0ff"}}}
