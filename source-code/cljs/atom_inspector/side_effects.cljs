@@ -1,11 +1,11 @@
 
 (ns atom-inspector.side-effects
-    (:require [atom-inspector.helpers :as helpers]
-              [atom-inspector.state   :as state]
-              [map.api                :refer [dissoc-in]]
-              [pretty.print           :as pretty]
-              [reader.api             :as reader]
-              [vector.api             :as vector]))
+    (:require [atom-inspector.env   :as env]
+              [atom-inspector.state :as state]
+              [map.api              :refer [dissoc-in]]
+              [pretty.print         :as pretty]
+              [reader.api           :as reader]
+              [vector.api           :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -16,7 +16,7 @@
   [inspector-id key]
   ; Steps into the given key of the currently inspected map item.
   ; Only map items are browsable in the inspector.
-  (let [inspected-path (helpers/get-inspected-path inspector-id)]
+  (let [inspected-path (env/get-inspected-path inspector-id)]
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (conj inspected-path key)})))
 
 (defn go-home!
@@ -31,7 +31,7 @@
   [inspector-id]
   ; Removes the last item of the inspected path, and the inspector steps back
   ; to the parent element of the currently inspected item.
-  (let [inspected-path (helpers/get-inspected-path inspector-id)]
+  (let [inspected-path (env/get-inspected-path inspector-id)]
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (vector/remove-last-item inspected-path)})))
 
 (defn update-inspected-item!
@@ -41,11 +41,11 @@
   [inspector-id f & params]
   ; Applies the given function and passing it the given params on the currently
   ; inspected item.
-  (let [atom-ref       (helpers/get-atom-ref       inspector-id)
-        inspected-path (helpers/get-inspected-path inspector-id)
-        inspected-item (helpers/get-inspected-item inspector-id)
+  (let [atom-ref       (env/get-atom-ref       inspector-id)
+        inspected-path (env/get-inspected-path inspector-id)
+        inspected-item (env/get-inspected-item inspector-id)
         updated-item   (apply f (cons inspected-item params))]
-       (if (helpers/root-level? inspector-id)
+       (if (env/root-level? inspector-id)
            (reset! atom-ref                         updated-item)
            (swap!  atom-ref assoc-in inspected-path updated-item))))
 
@@ -53,11 +53,11 @@
   ; @param (keyword) inspector-id
   [inspector-id]
   ; Copies the inspected item into the :bin, then removes the inspected item.
-  (let [atom-ref       (helpers/get-atom-ref       inspector-id)
-        inspected-path (helpers/get-inspected-path inspector-id)
-        inspected-item (helpers/get-inspected-item inspector-id)]
+  (let [atom-ref       (env/get-atom-ref       inspector-id)
+        inspected-path (env/get-inspected-path inspector-id)
+        inspected-item (env/get-inspected-item inspector-id)]
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :bin] inspected-item)
-       (if (helpers/root-level? inspector-id)
+       (if (env/root-level? inspector-id)
            (reset! atom-ref nil)
            (swap!  atom-ref dissoc-in inspected-path))))
 
@@ -66,11 +66,11 @@
   [inspector-id]
   ; Restores the removed item by using its backup copy stored in the :bin.
   ; The inspector empties the bin when the inspected path changes!
-  (let [atom-ref       (helpers/get-atom-ref       inspector-id)
-        inspected-path (helpers/get-inspected-path inspector-id)
+  (let [atom-ref       (env/get-atom-ref       inspector-id)
+        inspected-path (env/get-inspected-path inspector-id)
         removed-item   (get-in @state/INSPECTORS [inspector-id :meta-items :bin])]
        (swap! state/INSPECTORS dissoc-in [inspector-id :meta-items :bin])
-       (if (helpers/root-level? inspector-id)
+       (if (env/root-level? inspector-id)
            (reset! atom-ref                         removed-item)
            (swap!  atom-ref assoc-in inspected-path removed-item))))
 
@@ -82,9 +82,9 @@
 (defn toggle-edit-mode!
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [atom-ref       (helpers/get-atom-ref       inspector-id)
-        inspected-path (helpers/get-inspected-path inspector-id)]
-       (if-let [edit-mode? (helpers/edit-mode? inspector-id)]
+  (let [atom-ref       (env/get-atom-ref       inspector-id)
+        inspected-path (env/get-inspected-path inspector-id)]
+       (if-let [edit-mode? (env/edit-mode? inspector-id)]
 
                ; When turning off the edit mode, the content of the textarea
                ; parsed into a data structure by using the reader/string->mixed
@@ -92,8 +92,8 @@
                ; in the inspected atom.
                ; In case of the parse fails (e.g. syntax error in the edited copy)
                ; the output of the string->mixed function is a string.
-               (let [edit-copy (helpers/get-edit-copy inspector-id)]
-                    (if (helpers/root-level? inspector-id)
+               (let [edit-copy (env/get-edit-copy inspector-id)]
+                    (if (env/root-level? inspector-id)
                         (reset! atom-ref                         (reader/string->mixed edit-copy))
                         (swap!  atom-ref assoc-in inspected-path (reader/string->mixed edit-copy))))
 
@@ -101,7 +101,7 @@
                ; (:edit-copy) and the textarea can changes the copy, not the original item.
                ; By using the pretty/mixed->string function the item displayed in the textarea
                ; in a well readable (pretty printed) way.
-               (let [inspected-item (helpers/get-inspected-item inspector-id)
+               (let [inspected-item (env/get-inspected-item inspector-id)
 
                      ; The mixed->string function puts quote marks on strings!
                      ; Therefore in case of the inspected item is a string, it's better

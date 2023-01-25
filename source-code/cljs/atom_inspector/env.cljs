@@ -1,5 +1,5 @@
 
-(ns atom-inspector.helpers
+(ns atom-inspector.env
     (:require [atom-inspector.state :as state]
               [map.api              :as map]
               [noop.api             :refer [return]]
