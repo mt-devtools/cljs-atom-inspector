@@ -13,6 +13,7 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- import-styles
+  ; @ignore
   []
   [:<> [:style {:rel "stylesheet" :type "text/css"}
                ".atom-inspector button:hover {background-color: #f0f0f0}"
@@ -27,29 +28,35 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- inspector-title
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   [inspector-id _]
   (let [inspected-path (env/get-inspected-path inspector-id)
         root-level?    (env/root-level?        inspector-id)]
-       [:div {:style {:font-size   "14px"
+       [:pre {:style {:font-size   "14px"
                       :font-weight "500"
                       :line-height "20px"}}
              (if root-level? (-> inspector-id        str)
                              (-> inspected-path last str))]))
 
 (defn- label-bar
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   ; {:label (string)(opt)}
   [inspector-id {:keys [label] :as header-props}]
-  [:div {:style {:color       "#888"
+  [:pre {:style {:color       "#888"
                  :font-size   "13px"
                  :font-weight "500"
                  :line-height "20px"}}
         (str label)])
 
 (defn- breadcrumbs
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   [inspector-id _]
@@ -58,27 +65,31 @@
                       :background-color "#f0f0f0"
                       :color            "#888"
                       :display          "flex"
-                      :font-size        "12px"
-                      :font-weight      "500"
                       :height           "42px"
-                      :line-height      "20px"
                       :margin-top       "6px"
-                      :padding          "6px 0"}}
-             (string/join inspected-path " || ")]))
+                      :padding          "6px"}}
+             [:pre {:style {:font-size   "12px"
+                            :font-weight "500"
+                            :line-height "20px"}}
+                   (string/join inspected-path " || ")]]))
 
 (defn- header
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   ; {:label (string)(opt)}
   [inspector-id header-props]
-  [:div [inspector-title inspector-id header-props]
-        [label-bar       inspector-id header-props]
-        [breadcrumbs     inspector-id header-props]])
+  [:<> [inspector-title inspector-id header-props]
+       [label-bar       inspector-id header-props]
+       [breadcrumbs     inspector-id header-props]])
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn- icon-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (map) button-props
   ; {:disabled? (boolean)(opt)
@@ -87,8 +98,8 @@
   ;  :on-click (function)}
   [inspector-id {:keys [disabled? icon label on-click]}]
   [:button {:on-click (if-not disabled? on-click)
-            :style {:opacity (if     disabled? ".5")
-                    :cursor  (if-not disabled? "pointer")
+            :style {:opacity (if disabled? ".5")
+                    :cursor  (if disabled? "default")
                     :align-items     "center"
                     :display         "flex"
                     :flex-direction  "column"
@@ -98,7 +109,7 @@
                     :width           "60px"}}
            [:i {:class :material-symbols-outlined
                 :style {:font-size   "24px"
-                        :font-weight "300"}}
+                        :font-weight "200"}}
                icon]
            [:pre {:style {:font-size "12px"}} label]])
 
@@ -106,18 +117,24 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- decrease-integer-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   [icon-button inspector-id {:icon :remove :label "Dec"
                              :on-click #(side-effects/update-inspected-item! inspector-id dec)}])
 
 (defn- increase-integer-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   [icon-button inspector-id {:icon :add :label "Inc"
                              :on-click #(side-effects/update-inspected-item! inspector-id inc)}])
 
 (defn- swap-boolean-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   [icon-button inspector-id {:icon :change_circle :label "Swap"
@@ -125,6 +142,8 @@
 
 
 (defn- toggle-raw-view-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [raw-view? (env/raw-view? inspector-id)]
@@ -133,6 +152,8 @@
                                   :on-click #(side-effects/toggle-raw-view! inspector-id)}]))
 
 (defn- go-home-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [root-level? (env/root-level? inspector-id)]
@@ -140,6 +161,8 @@
                                   :on-click #(side-effects/go-home! inspector-id)}]))
 
 (defn- go-up-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [root-level? (env/root-level? inspector-id)]
@@ -147,12 +170,16 @@
                                   :on-click #(side-effects/go-up! inspector-id)}]))
 
 (defn- remove-item-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   [icon-button inspector-id {:icon :delete :label "Remove"
                              :on-click #(side-effects/remove-inspected-item! inspector-id)}])
 
 (defn- edit-item-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [edit-mode? (env/edit-mode? inspector-id)]
@@ -161,6 +188,8 @@
                                   :on-click #(side-effects/toggle-edit-mode! inspector-id)}]))
 
 (defn- recycle-item-button
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (if (env/inspected-item-removed? inspector-id)
@@ -171,6 +200,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- toolbar
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (list of symbols) buttons
   [inspector-id & buttons]
@@ -183,7 +214,19 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn- empty-item-label
+  ; @ignore
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       (if (empty? inspected-item)
+           [:pre {:style {:font-size "13px" :line-height "20px"}}
+                 "Empty"])))
+
 (defn- raw-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (if-let [raw-view? (env/raw-view? inspector-id)]
@@ -194,6 +237,8 @@
                            (pretty/mixed->string inspected-item)]])))
 
 (defn- item-editor
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (letfn [(f [v] (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] v))]
@@ -211,6 +256,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn- map-key
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (*) key
   [inspector-id key]
@@ -222,108 +269,133 @@
                        :return       (str           key))]])
 
 (defn- map-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [inspected-item (env/get-inspected-item     inspector-id)
         map-keys       (env/get-inspected-map-keys inspector-id)]
-       [:pre {:style {:font-size "13px" :line-height "20px"}}
-             [header  inspector-id {:label (str "map, "(count map-keys)" item(s)")}]
-             [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
-             (if (empty? inspected-item) "Empty")
-             (letfn [(f [%1 %2] (conj %1 [map-key inspector-id %2]))]
-                    (reduce f [:<>] map-keys))
-             [raw-item    inspector-id]
-             [item-editor inspector-id]]))
+       [:<> [header  inspector-id {:label (str "map, "(count map-keys)" item(s)")}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+            [empty-item-label inspector-id]
+            [:div {:style {:overflow "scroll"}}
+                  (letfn [(f [%1 %2] (conj %1 [map-key inspector-id %2]))]
+                         (reduce f [:<>] map-keys))
+                  [raw-item    inspector-id]
+                  [item-editor inspector-id]]]))
+
+(defn- vector-key
+  ; @ignore
+  ;
+  ; @param (keyword) inspector-id
+  ; @param (*) key
+  [_ key]
+  [:pre {:style {:font-size "13px" :line-height "20px"}}
+        (cond (nil?    key) (str "nil")
+              (string? key) (syntax/quotes key)
+              :return       (str           key))])
 
 (defn- vector-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:pre {:style {:font-size "13px" :line-height "20px"}}
-             [header  inspector-id {:label (str "vector, " (count inspected-item) " item(s)")}]
-             [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
-             (if (empty? inspected-item) "Empty")
-             (letfn [(f [%1 %2] (conj %1 [:div (cond (nil?    %2) (str "nil")
-                                                     (string? %2) (syntax/quotes %2)
-                                                     :return      (str           %2))]))]
-                    (reduce f [:div] inspected-item))
-             [raw-item    inspector-id]
-             [item-editor inspector-id]]))
+       [:<> [header  inspector-id {:label (str "vector, " (count inspected-item) " item(s)")}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+            [empty-item-label inspector-id]
+            [:div {:style {:overflow "scroll"}}
+                  (letfn [(f [%1 %2] (conj %1 [vector-key inspector-id %2]))]
+                         (reduce f [:<>] inspected-item))
+                  [raw-item    inspector-id]
+                  [item-editor inspector-id]]]))
 
 (defn- boolean-item
-  ; @param (keyword) inspector-id
-  [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "boolean"}]
-        [toolbar inspector-id go-home-button go-up-button remove-item-button swap-boolean-button]
-        (let [inspected-item (env/get-inspected-item inspector-id)]
-             [:div (str inspected-item)])])
-
-(defn- integer-item
-  ; @param (keyword) inspector-id
-  [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "integer"}]
-        [toolbar inspector-id go-home-button go-up-button remove-item-button decrease-integer-button increase-integer-button edit-item-button]
-        (let [inspected-item (env/get-inspected-item inspector-id)]
-             [:div (str inspected-item)]
-             [item-editor inspector-id])])
-
-(defn- string-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:pre {:style {:font-size "13px" :line-height "20px"}}
-             [header  inspector-id {:label (str "string, "(count inspected-item) " char.")}]
-             [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
-             [:div {:style {:white-space :normal}}
-                   (syntax/quotes inspected-item)]
-             [item-editor inspector-id]]))
+       [:<> [header  inspector-id {:label "boolean"}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button swap-boolean-button]
+            [:pre {:style {:font-size "13px" :line-height "20px"}}
+                  (str inspected-item)]]))
+
+(defn- integer-item
+  ; @ignore
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header  inspector-id {:label "integer"}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button decrease-integer-button increase-integer-button edit-item-button]
+            [:pre {:style {:font-size "13px" :line-height "20px"}}
+                  (str inspected-item)]
+            [item-editor inspector-id]]))
+
+(defn- string-item
+  ; @ignore
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header  inspector-id {:label (str "string, "(count inspected-item) " char.")}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
+            [:div {:style {:overflow "scroll"}}
+                  [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
+                        (syntax/quotes inspected-item)]
+                  [item-editor inspector-id]]]))
 
 (defn- keyword-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "keyword"}]
-        [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
-        (let [inspected-item (env/get-inspected-item inspector-id)]
-             [:div {:style {:white-space :normal}}
-                   (str inspected-item)])
-        [item-editor inspector-id]])
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header  inspector-id {:label "keyword"}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
+            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
+                  (str inspected-item)]
+            [item-editor inspector-id]]))
 
 (defn- symbol-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "symbol"}]
-        [toolbar inspector-id go-home-button go-up-button remove-item-button]
-        (let [inspected-item (env/get-inspected-item inspector-id)]
-             [:div {:style {:white-space :normal}}
-                   (str inspected-item)])])
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header  inspector-id {:label "symbol"}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button]
+            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
+                  (str inspected-item)]]))
 
 (defn- nil-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "nil"}]
-        [toolbar inspector-id go-home-button go-up-button recycle-item-button edit-item-button]
-        [:div "nil"]
-        [item-editor inspector-id]])
+  [:<> [header  inspector-id {:label "nil"}]
+       [toolbar inspector-id go-home-button go-up-button recycle-item-button edit-item-button]
+       [:pre {:style {:font-size "13px" :line-height "20px"}} "nil"]
+       [item-editor inspector-id]])
 
 (defn- unknown-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        [header  inspector-id {:label "unknown"}]
-        [toolbar inspector-id go-home-button go-up-button remove-item-button]
-        (let [inspected-item (env/get-inspected-item inspector-id)]
-             [:div {:style {:white-space :normal}}
-                   (str inspected-item)])])
+  (let [inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header  inspector-id {:label "unknown"}]
+            [toolbar inspector-id go-home-button go-up-button remove-item-button]
+            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
+                  (str inspected-item)]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
 (defn inspected-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [inspected-item (env/get-inspected-item inspector-id)]
@@ -338,9 +410,14 @@
              :return                   [unknown-item  inspector-id])))
 
 (defn- atom-inspector
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:div {:class :atom-inspector}
+  ; By using the {height: 100%} and {display: flex} settings on this element,
+  ; the inspector's height is limited to its parent element's height
+  ; and the {overflow: scroll} setting can makes the inspector's content scrollable.
+  [:div {:class :atom-inspector :style {:display "flex" :flex-direction "column" :height "100%"}}
         [import-styles]
         [inspected-item inspector-id]])
 

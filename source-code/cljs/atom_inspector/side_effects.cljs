@@ -11,6 +11,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn inspect-key!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (*) key
   [inspector-id key]
@@ -20,6 +22,8 @@
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (conj inspected-path key)})))
 
 (defn go-home!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   ; Resets the inspected path to an empty vector and the inspector steps back to
@@ -27,6 +31,8 @@
   (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path []}))
 
 (defn go-up!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   ; Removes the last item of the inspected path, and the inspector steps back
@@ -35,6 +41,8 @@
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (vector/remove-last-item inspected-path)})))
 
 (defn update-inspected-item!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ; @param (function) f
   ; @param (list of *) params
@@ -50,9 +58,11 @@
            (swap!  atom-ref assoc-in inspected-path updated-item))))
 
 (defn remove-inspected-item!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Copies the inspected item into the :bin, then removes the inspected item.
+  ; Duplicates the inspected item into the :bin, then removes the inspected item.
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         inspected-item (env/get-inspected-item inspector-id)]
@@ -62,6 +72,8 @@
            (swap!  atom-ref dissoc-in inspected-path))))
 
 (defn restore-inspected-item!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   ; Restores the removed item by using its backup copy stored in the :bin.
@@ -75,11 +87,15 @@
            (swap!  atom-ref assoc-in inspected-path removed-item))))
 
 (defn toggle-raw-view!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (swap! state/INSPECTORS update-in [inspector-id :meta-items :raw-view?] not))
 
 (defn toggle-edit-mode!
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [atom-ref       (env/get-atom-ref       inspector-id)

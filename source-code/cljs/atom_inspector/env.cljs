@@ -9,6 +9,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn get-atom-ref
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (atom)
@@ -17,6 +19,8 @@
   (get-in @state/INSPECTORS [inspector-id :ref]))
 
 (defn get-inspected-path
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (vector)
@@ -25,6 +29,8 @@
   (get-in @state/INSPECTORS [inspector-id :meta-items :inspected-path] []))
 
 (defn get-inspected-item
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (*)
@@ -36,6 +42,8 @@
                   (return @atom-ref))))
 
 (defn root-level?
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
@@ -45,6 +53,8 @@
   (= [] (get-inspected-path inspector-id)))
 
 (defn edit-mode?
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
@@ -55,6 +65,8 @@
   (get-in @state/INSPECTORS [inspector-id :meta-items :edit-mode?]))
 
 (defn raw-view?
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
@@ -65,6 +77,8 @@
   (get-in @state/INSPECTORS [inspector-id :meta-items :raw-view?]))
 
 (defn inspected-item-removed?
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
@@ -78,6 +92,8 @@
 ;; ----------------------------------------------------------------------------
 
 (defn get-edit-copy
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (string)
@@ -90,11 +106,13 @@
 ;; ----------------------------------------------------------------------------
 
 (defn get-inspected-map-keys
+  ; @ignore
+  ;
   ; @param (keyword) inspector-id
   ;
   ; @return (vector)
   [inspector-id]
   ; When inspecting a map it can be browsed by its keys.
-  ; This function returns with the inspected map's keys ordered in alphabetically.
+  ; This function returns with the inspected map's keys (ordered in alphabetically).
   (if-let [inspected-item (get-inspected-item inspector-id)]
           (-> inspected-item map/get-keys vector/abc-items)))
