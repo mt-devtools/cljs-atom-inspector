@@ -3,8 +3,8 @@
 
 ### Overview
 
-The <strong>cljs-atom-inspector</strong> is a simple tool for inspecting, browsing
-and editing Reagent atoms.
+The <strong>cljs-atom-inspector</strong> is a simple ClojureScript tool for inspecting,
+browsing or editing ClojureScript atoms or Reagent atoms.
 
 ### deps.edn
 
