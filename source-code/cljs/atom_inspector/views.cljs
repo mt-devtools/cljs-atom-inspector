@@ -203,7 +203,7 @@
   ; @ignore
   ;
   ; @param (keyword) inspector-id
-  ; @param (list of symbols) buttons
+  ; @param (list of Reagent component symbols) buttons
   [inspector-id & buttons]
   [:div {:style {:padding-bottom "12px"}}
         [:div {:style {:display "flex"}}
