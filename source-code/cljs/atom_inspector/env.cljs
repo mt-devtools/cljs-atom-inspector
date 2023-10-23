@@ -2,7 +2,6 @@
 (ns atom-inspector.env
     (:require [atom-inspector.state :as state]
               [map.api              :as map]
-              [noop.api             :refer [return]]
               [vector.api           :as vector]))
 
 ;; ----------------------------------------------------------------------------
@@ -39,7 +38,7 @@
   (if-let [atom-ref (get-atom-ref inspector-id)]
           (if-let [inspected-path (get-in @state/INSPECTORS [inspector-id :meta-items :inspected-path])]
                   (get-in @atom-ref inspected-path)
-                  (return @atom-ref))))
+                  (->     @atom-ref))))
 
 (defn root-level?
   ; @ignore
