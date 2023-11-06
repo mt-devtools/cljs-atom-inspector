@@ -26,8 +26,8 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Resets the inspected path to an empty vector and the inspector steps back to
-  ; the root level of the inspected atom.
+  ; Resets the inspected path to an empty vector therefore the inspector steps back
+  ; to the root level of the inspected atom.
   (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path []}))
 
 (defn go-up!
@@ -35,7 +35,7 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Removes the last item of the inspected path, and the inspector steps back
+  ; Removes the last item of the inspected path, therefore the inspector steps back
   ; to the parent element of the currently inspected item.
   (let [inspected-path (env/get-inspected-path inspector-id)]
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (vector/remove-last-item inspected-path)})))
@@ -47,8 +47,7 @@
   ; @param (function) f
   ; @param (list of *) params
   [inspector-id f & params]
-  ; Applies the given function and passing it the given params on the currently
-  ; inspected item.
+  ; Applies the given function and passing it the given params on the currently inspected item.
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         inspected-item (env/get-inspected-item inspector-id)
@@ -62,7 +61,7 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Duplicates the inspected item into the :bin, then removes the inspected item.
+  ; Duplicates the inspected item into the bin, then removes the inspected item.
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         inspected-item (env/get-inspected-item inspector-id)]
@@ -76,7 +75,7 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Restores the removed item by using its backup copy stored in the :bin.
+  ; Restores the removed item by using its backup copy stored under the bin.
   ; The inspector empties the bin when the inspected path changes!
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
@@ -104,26 +103,26 @@
 
                ; When turning off the edit mode, the content of the textarea
                ; parsed into a data structure by using the reader/string->mixed
-               ; function. After it parsed, this function stores the (parsed) value
+               ; function. After it is parsed, this function stores the (parsed) value
                ; in the inspected atom.
-               ; In case of the parse fails (e.g. syntax error in the edited copy)
-               ; the output of the string->mixed function is a string.
+               ; In case of the parse is failed (e.g. syntax error in the edited copy)
+               ; the output of the 'pretty/string->mixed' function is a string.
                (let [edit-copy (env/get-edit-copy inspector-id)]
                     (if (env/root-level? inspector-id)
                         (reset! atom-ref                         (reader/string->mixed edit-copy))
                         (swap!  atom-ref assoc-in inspected-path (reader/string->mixed edit-copy))))
 
                ; When turning on the edit mode, it makes a copy of the inspected item
-               ; (:edit-copy) and the textarea can changes the copy, not the original item.
-               ; By using the pretty/mixed->string function the item displayed in the textarea
+               ; (:edit-copy) and the textarea can change the copy, not the original item.
+               ; By using the 'pretty/mixed->string' function the item displayed in the textarea
                ; in a well readable (pretty printed) way.
                (let [inspected-item (env/get-inspected-item inspector-id)
 
-                     ; The mixed->string function puts quote marks on strings!
+                     ; The 'pretty/string->mixed' function puts quote marks on strings!
                      ; Therefore in case of the inspected item is a string, it's better
-                     ; to not passing it the mixed->string function.
+                     ; to not passing it the 'pretty/string->mixed' function to avoid duplicated quotes.
                      unparsed-item (if (string? inspected-item) inspected-item (pretty/mixed->string inspected-item))]
                     (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] unparsed-item))))
 
-  ; Toggling the edit-mode switch
+  ; Toggling the edit mode switch
   (swap! state/INSPECTORS update-in [inspector-id :meta-items :edit-mode?] not))

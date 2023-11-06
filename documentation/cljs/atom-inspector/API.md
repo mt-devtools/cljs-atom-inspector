@@ -1,11 +1,17 @@
 
-# atom-inspector.api ClojureScript namespace
+### atom-inspector.api
+
+Functional documentation of the atom-inspector.api ClojureScript namespace
+
+---
 
 ##### [README](../../../README.md) > [DOCUMENTATION](../../COVER.md) > atom-inspector.api
 
 ### Index
 
 - [view](#view)
+
+---
 
 ### view
 
@@ -61,5 +67,5 @@
 
 ---
 
-This documentation is generated with the [clj-docs-generator](https://github.com/bithandshake/clj-docs-generator) engine.
+<sub>This documentation is generated with the [clj-docs-generator](https://github.com/bithandshake/clj-docs-generator) engine.</sub>
 

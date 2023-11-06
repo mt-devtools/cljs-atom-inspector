@@ -339,7 +339,7 @@
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:<> [header  inspector-id {:label (str "string, "(count inspected-item) " char.")}]
+       [:<> [header  inspector-id {:label (str "string, "(count inspected-item) " char")}]
             [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
             [:div {:style {:overflow "scroll"}}
                   [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
@@ -414,9 +414,9 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; By using the {height: 100%} and {display: flex} settings on this element,
+  ; By using the '{height: 100%}' and the '{display: flex}' settings on this element,
   ; the inspector's height is limited to its parent element's height
-  ; and the {overflow: scroll} setting can makes the inspector's content scrollable.
+  ; and the '{overflow: scroll}' setting can make the inspector's content scrollable.
   [:div {:class :atom-inspector :style {:display "flex" :flex-direction "column" :height "100%"}}
         [import-styles]
         [inspected-item inspector-id]])
