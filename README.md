@@ -6,6 +6,9 @@
 The <strong>cljs-atom-inspector</strong> is a simple ClojureScript tool for inspecting,
 browsing or editing ClojureScript atoms or Reagent atoms.
 
+> UI components in this library are Reagent components. For more information, check out
+  the [Reagent Project](https://github.com/reagent-project/reagent).
+
 ### deps.edn
 
 ```
@@ -37,14 +40,14 @@ tools to browse and edit the content of the atom.
       [view ::my-atom-inspector {:ref my-atom}])  
 ```
 
-### Browsing the atom:
+### Browsing an atom:
 
-![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view1.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview1.png?raw=true)
 
 ### Displaying the inspected path in raw mode:
 
-![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view2.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview2.png?raw=true)
 
 ### Editing the content of the inspected path:
 
-![view](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/view3.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview3.png?raw=true)
