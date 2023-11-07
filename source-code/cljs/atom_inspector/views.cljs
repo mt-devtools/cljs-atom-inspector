@@ -233,7 +233,7 @@
   ; @param (*) key
   [inspector-id key]
   [ugly-elements/button {:on-click #(side-effects/inspect-key! inspector-id key)
-                         :label    (cond (string? key) (syntax/quotes key)
+                         :content  (cond (string? key) (syntax/quotes key)
                                          (nil?    key) (str           "nil")
                                          :return       (str           key))}])
 
@@ -249,7 +249,7 @@
             (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
                           [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button])
             [empty-item-label inspector-id]
-            [:div {:style {:overflow "scroll"}}
+            [:div {:style {:display "flex" :flex-direction "column" :overflow "scroll"}}
                   (letfn [(f [%1 %2] (conj %1 [map-key inspector-id %2]))]
                          (reduce f [:<>] map-keys))
                   [raw-item    inspector-id]
