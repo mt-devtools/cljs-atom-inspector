@@ -1,28 +1,16 @@
 
 (ns atom-inspector.views
     (:require [atom-inspector.env          :as env]
+              [atom-inspector.prototypes   :as prototypes]
               [atom-inspector.side-effects :as side-effects]
               [atom-inspector.state        :as state]
               [pretty.api                  :as pretty]
               [random.api                  :as random]
               [reagent.core                :as reagent]
               [string.api                  :as string]
-              [syntax.api                  :as syntax]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- import-styles
-  ; @ignore
-  []
-  [:<> [:style {:rel "stylesheet" :type "text/css"}
-               ".atom-inspector button:hover {background-color: #f0f0f0}"
-               ".atom-inspector button       {background-color: transparent; border: 0}"
-               ".atom-inspector div          {box-sizing: border-box}"
-               ".atom-inspector pre          {margin: 0}"
-               ".atom-inspector textarea     {border: 0; box-sizing: border-box}"]
-       [:link  {:item-prop "url" :rel "stylesheet" :type "text/css"
-                :href "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"}]])
+              [syntax.api                  :as syntax]
+              [ugly-elements.api           :as ugly-elements]
+              [vector.api                  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -33,13 +21,13 @@
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   [inspector-id _]
-  (let [inspected-path (env/get-inspected-path inspector-id)
-        root-level?    (env/root-level?        inspector-id)]
-       [:pre {:style {:font-size   "14px"
-                      :font-weight "500"
-                      :line-height "20px"}}
-             (if root-level? (-> inspector-id        str)
-                             (-> inspected-path last str))]))
+  (if (-> @state/INSPECTORS inspector-id :header (vector/contains-item? :key-label))
+      (let [inspected-path (env/get-inspected-path inspector-id)
+            root-level?    (env/root-level?        inspector-id)]
+           [ugly-elements/label ::inspector-title
+                                {:font-size :xs
+                                 :content (if root-level? (-> inspector-id        str)
+                                                          (-> inspected-path last str))}])))
 
 (defn- label-bar
   ; @ignore
@@ -48,11 +36,12 @@
   ; @param (map) header-props
   ; {:label (string)(opt)}
   [inspector-id {:keys [label] :as header-props}]
-  [:pre {:style {:color       "#888"
-                 :font-size   "13px"
-                 :font-weight "500"
-                 :line-height "20px"}}
-        (str label)])
+  (if (-> @state/INSPECTORS inspector-id :header (vector/contains-item? :type-label))
+      [:<> [ugly-elements/label ::label-bar
+                                {:content label
+                                 :color :muted
+                                 :font-size :xs}]
+           [ugly-elements/horizontal-separator {}]]))
 
 (defn- breadcrumbs
   ; @ignore
@@ -60,18 +49,22 @@
   ; @param (keyword) inspector-id
   ; @param (map) header-props
   [inspector-id _]
-  (let [inspected-path (env/get-inspected-path inspector-id)]
-       [:div {:style {:align-items      "center"
-                      :background-color "#f0f0f0"
-                      :color            "#888"
-                      :display          "flex"
-                      :height           "42px"
-                      :margin-top       "6px"
-                      :padding          "6px"}}
-             [:pre {:style {:font-size   "12px"
-                            :font-weight "500"
-                            :line-height "20px"}}
-                   (string/join inspected-path " || ")]]))
+  (if (-> @state/INSPECTORS inspector-id :header (vector/contains-item? :breadcrumbs))
+      (let [crumbs (-> inspector-id env/get-inspected-path (vector/->items #(-> {:label %})))]
+           [ugly-elements/breadcrumbs ::breadcrumbs
+                                      {:crumbs crumbs}])))
+
+(defn- toolbar
+  ; @ignore
+  ;
+  ; @param (keyword) inspector-id
+  ; @param (list of Reagent component symbols) buttons
+  [inspector-id & buttons]
+  [:<> [ugly-elements/row ::toolbar
+                          {:content (letfn [(f [%1 %2] (conj %1 [%2 inspector-id]))]
+                                           (reduce f [:<>] buttons))}]
+       [ugly-elements/horizontal-line      {}]
+       [ugly-elements/horizontal-separator {}]])
 
 (defn- header
   ; @ignore
@@ -87,78 +80,63 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
-(defn- icon-button
-  ; @ignore
-  ;
-  ; @param (keyword) inspector-id
-  ; @param (map) button-props
-  ; {:disabled? (boolean)(opt)
-  ;  :icon (keyword)
-  ;  :label (string)
-  ;  :on-click (function)}
-  [inspector-id {:keys [disabled? icon label on-click]}]
-  [:button {:on-click (if-not disabled? on-click)
-            :style {:opacity (if disabled? ".5")
-                    :cursor  (if disabled? "default")
-                    :align-items     "center"
-                    :display         "flex"
-                    :flex-direction  "column"
-                    :height          "60px"
-                    :justify-content "center"
-                    :user-select     "none"
-                    :width           "60px"}}
-           [:i {:class :material-symbols-outlined
-                :style {:font-size   "24px"
-                        :font-weight "200"}}
-               icon]
-           [:pre {:style {:font-size "12px"}} label]])
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
 (defn- decrease-integer-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [icon-button inspector-id {:icon :remove :label "Dec"
-                             :on-click #(side-effects/update-inspected-item! inspector-id dec)}])
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :step-integer))
+      [ugly-elements/icon-button ::decrease-integer-button
+                                 {:icon     :remove
+                                  :label    "Dec"
+                                  :on-click #(side-effects/update-inspected-item! inspector-id dec)}]))
 
 (defn- increase-integer-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [icon-button inspector-id {:icon :add :label "Inc"
-                             :on-click #(side-effects/update-inspected-item! inspector-id inc)}])
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :step-integer))
+      [ugly-elements/icon-button ::increase-integer-button
+                                 {:icon     :add
+                                  :label    "Inc"
+                                  :on-click #(side-effects/update-inspected-item! inspector-id inc)}]))
 
 (defn- swap-boolean-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [icon-button inspector-id {:icon :change_circle :label "Swap"
-                             :on-click #(side-effects/update-inspected-item! inspector-id not)}])
-
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :swap-boolean))
+      [ugly-elements/icon-button ::swap-boolean-button
+                                 {:icon     :change_circle
+                                  :label    "Swap"
+                                  :on-click #(side-effects/update-inspected-item! inspector-id not)}]))
 
 (defn- toggle-raw-view-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [raw-view? (env/raw-view? inspector-id)]
-       [icon-button inspector-id {:icon  (if raw-view? :code_off :code)
-                                  :label (if raw-view? "Raw" "Raw")
-                                  :on-click #(side-effects/toggle-raw-view! inspector-id)}]))
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :raw-view))
+      (let [raw-view? (env/raw-view? inspector-id)]
+           [ugly-elements/icon-button ::toggle-raw-view-button
+                                      {:icon     (if raw-view? :code_off :code)
+                                       :label    (if raw-view? "Raw" "Raw")
+                                       :on-click #(side-effects/toggle-raw-view! inspector-id)}])))
 
 (defn- go-home-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [root-level? (env/root-level? inspector-id)]
-       [icon-button inspector-id {:icon :home :label "Root" :disabled? root-level?
-                                  :on-click #(side-effects/go-home! inspector-id)}]))
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :go-root))
+      (let [root-level? (env/root-level? inspector-id)]
+           [ugly-elements/icon-button ::go-home-button
+                                      {:disabled? root-level?
+                                       :icon      :home
+                                       :label     "Root"
+                                       :on-click  #(side-effects/go-home! inspector-id)}])))
 
 (defn- go-up-button
   ; @ignore
@@ -166,50 +144,45 @@
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [root-level? (env/root-level? inspector-id)]
-       [icon-button inspector-id {:icon :chevron_left :label "Go up" :disabled? root-level?
-                                  :on-click #(side-effects/go-up! inspector-id)}]))
+       [ugly-elements/icon-button ::go-up-button
+                                  {:disabled? root-level?
+                                   :icon      :chevron_left
+                                   :label     "Go up"
+                                   :on-click  #(side-effects/go-up! inspector-id)}]))
 
 (defn- remove-item-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [icon-button inspector-id {:icon :delete :label "Remove"
-                             :on-click #(side-effects/remove-inspected-item! inspector-id)}])
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :remove-value))
+      [ugly-elements/icon-button ::remove-item-button
+                                 {:icon     :delete
+                                  :label    "Remove"
+                                  :on-click #(side-effects/remove-inspected-item! inspector-id)}]))
 
 (defn- edit-item-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [edit-mode? (env/edit-mode? inspector-id)]
-       [icon-button inspector-id {:icon     (if edit-mode? :edit_off :edit)
-                                  :label    (if edit-mode? "Save" "Edit")
-                                  :on-click #(side-effects/toggle-edit-mode! inspector-id)}]))
+  (if (-> @state/INSPECTORS inspector-id :controls (vector/contains-item? :edit-value))
+      (let [edit-mode? (env/edit-mode? inspector-id)]
+           [ugly-elements/icon-button ::edit-item-button
+                                      {:icon     (if edit-mode? :edit_off :edit)
+                                       :label    (if edit-mode? "Save" "Edit")
+                                       :on-click #(side-effects/toggle-edit-mode! inspector-id)}])))
 
-(defn- recycle-item-button
+(defn- restore-item-button
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (if (env/inspected-item-removed? inspector-id)
-      [icon-button inspector-id {:icon :recycling :label "Restore"
-                                 :on-click #(side-effects/restore-inspected-item! inspector-id)}]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn- toolbar
-  ; @ignore
-  ;
-  ; @param (keyword) inspector-id
-  ; @param (list of Reagent component symbols) buttons
-  [inspector-id & buttons]
-  [:div {:style {:padding-bottom "12px"}}
-        [:div {:style {:display "flex"}}
-              (letfn [(f [%1 %2] (conj %1 [%2 inspector-id]))]
-                     (reduce f [:<>] buttons))]
-        [:div {:style {:width "100%" :height "1px" :border "1px dashed #ddd"}}]])
+      [ugly-elements/icon-button ::restore-item-button
+                                 {:icon     :recycling
+                                  :label    "Restore"
+                                  :on-click #(side-effects/restore-inspected-item! inspector-id)}]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -221,8 +194,9 @@
   [inspector-id]
   (let [inspected-item (env/get-inspected-item inspector-id)]
        (if (empty? inspected-item)
-           [:pre {:style {:font-size "13px" :line-height "20px"}}
-                 "Empty"])))
+           [ugly-elements/label ::empty-item-label
+                                {:color   :muted
+                                 :content "Empty"}])))
 
 (defn- raw-item
   ; @ignore
@@ -231,10 +205,9 @@
   [inspector-id]
   (if-let [raw-view? (env/raw-view? inspector-id)]
           (let [inspected-item (env/get-inspected-item inspector-id)]
-               [:div {:style {:padding-top "48px"}}
-                     [:pre {:style {:font-size "13px" :line-height "20px"
-                                    :padding "6px" :background-color "#f0f0f0"}}
-                           (pretty/mixed->string inspected-item)]])))
+               [:<> [ugly-elements/horizontal-separator {:height :m}]
+                    [ugly-elements/box ::raw-item
+                                       {:content (pretty/mixed->string inspected-item)}]])))
 
 (defn- item-editor
   ; @ignore
@@ -244,13 +217,11 @@
   (letfn [(f [v] (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] v))]
          (if-let [edit-mode? (env/edit-mode? inspector-id)]
                  (let [edit-copy (env/get-edit-copy inspector-id)]
-                      [:pre {:style {:padding-top "48px"}}
-                            [:textarea {:value edit-copy
-                                        :style {:font-size "13px" :line-height "20px"
-                                                :min-height "420px" :width "100%"
-                                                :padding "6px" :background-color "#f0f0f0"}
-                                        :on-change (fn [e] (let [v (-> e .-target .-value)]
-                                                                (f v)))}]]))))
+                      [:<> [ugly-elements/horizontal-separator {:height :m}]
+                           [ugly-elements/textarea ::item-editor
+                                                   {:on-change f
+                                                    :style     {:min-height "420px"}
+                                                    :value     edit-copy}]]))))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -261,22 +232,22 @@
   ; @param (keyword) inspector-id
   ; @param (*) key
   [inspector-id key]
-  [:button {:style {:cursor "pointer" :display "block"}
-            :on-click #(side-effects/inspect-key! inspector-id key)}
-           [:pre {:style {:font-size "13px" :line-height "20px"}}
-                 (cond (string? key) (syntax/quotes key)
-                       (nil?    key) (str           "nil")
-                       :return       (str           key))]])
+  [ugly-elements/button {:on-click #(side-effects/inspect-key! inspector-id key)
+                         :label    (cond (string? key) (syntax/quotes key)
+                                         (nil?    key) (str           "nil")
+                                         :return       (str           key))}])
 
 (defn- map-item
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item     inspector-id)
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :map))
+        inspected-item (env/get-inspected-item     inspector-id)
         map-keys       (env/get-inspected-map-keys inspector-id)]
-       [:<> [header  inspector-id {:label (str "map, "(count map-keys)" item(s)")}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+       [:<> [header inspector-id {:label (str "map, "(count map-keys)" item(s)")}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button])
             [empty-item-label inspector-id]
             [:div {:style {:overflow "scroll"}}
                   (letfn [(f [%1 %2] (conj %1 [map-key inspector-id %2]))]
@@ -290,19 +261,21 @@
   ; @param (keyword) inspector-id
   ; @param (*) key
   [_ key]
-  [:pre {:style {:font-size "13px" :line-height "20px"}}
-        (cond (nil?    key) (str "nil")
-              (string? key) (syntax/quotes key)
-              :return       (str           key))])
+  [ugly-elements/label {:color   :muted
+                        :content (cond (nil?    key) (str "nil")
+                                       (string? key) (syntax/quotes key)
+                                       :return       (str           key))}])
 
 (defn- vector-item
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:<> [header  inspector-id {:label (str "vector, " (count inspected-item) " item(s)")}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :vector))
+        inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header inspector-id {:label (str "vector, " (count inspected-item) " item(s)")}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button])
             [empty-item-label inspector-id]
             [:div {:style {:overflow "scroll"}}
                   (letfn [(f [%1 %2] (conj %1 [vector-key inspector-id %2]))]
@@ -315,22 +288,29 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item inspector-id)]
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :boolean))
+        inspected-item (env/get-inspected-item inspector-id)]
        [:<> [header  inspector-id {:label "boolean"}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button swap-boolean-button]
-            [:pre {:style {:font-size "13px" :line-height "20px"}}
-                  (str inspected-item)]]))
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button swap-boolean-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button swap-boolean-button])
+            [ugly-elements/label ::boolean-item
+                                 {:color   :muted
+                                  :content (str inspected-item)}]
+            [item-editor inspector-id]]))
 
 (defn- integer-item
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:<> [header  inspector-id {:label "integer"}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button decrease-integer-button increase-integer-button edit-item-button]
-            [:pre {:style {:font-size "13px" :line-height "20px"}}
-                  (str inspected-item)]
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :integer))
+        inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header inspector-id {:label "integer"}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button decrease-integer-button increase-integer-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button decrease-integer-button increase-integer-button])
+            [ugly-elements/label ::integer-item
+                                 {:color   :muted
+                                  :content (str inspected-item)}]
             [item-editor inspector-id]]))
 
 (defn- string-item
@@ -338,12 +318,16 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:<> [header  inspector-id {:label (str "string, "(count inspected-item) " char")}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :string))
+        inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header inspector-id {:label (str "string, "(count inspected-item) " char")}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button])
             [:div {:style {:overflow "scroll"}}
-                  [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
-                        (syntax/quotes inspected-item)]
+                  [ugly-elements/label ::string-item
+                                       {:color   :muted
+                                        :content (syntax/quotes inspected-item)
+                                        :style   {:white-space "normal"}}]
                   [item-editor inspector-id]]]))
 
 (defn- keyword-item
@@ -351,11 +335,15 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (let [inspected-item (env/get-inspected-item inspector-id)]
-       [:<> [header  inspector-id {:label "keyword"}]
-            [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
-            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
-                  (str inspected-item)]
+  (let [editable?      (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :keyword))
+        inspected-item (env/get-inspected-item inspector-id)]
+       [:<> [header inspector-id {:label "keyword"}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button remove-item-button edit-item-button])
+            [ugly-elements/label ::keyword-item
+                                 {:color   :muted
+                                  :content (str inspected-item)
+                                  :style   {:white-space "normal"}}]
             [item-editor inspector-id]]))
 
 (defn- symbol-item
@@ -366,18 +354,24 @@
   (let [inspected-item (env/get-inspected-item inspector-id)]
        [:<> [header  inspector-id {:label "symbol"}]
             [toolbar inspector-id go-home-button go-up-button remove-item-button]
-            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
-                  (str inspected-item)]]))
+            [ugly-elements/label ::symbol-item
+                                 {:color   :muted
+                                  :content (str inspected-item)
+                                  :style   {:white-space "normal"}}]]))
 
 (defn- nil-item
   ; @ignore
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  [:<> [header  inspector-id {:label "nil"}]
-       [toolbar inspector-id go-home-button go-up-button recycle-item-button edit-item-button]
-       [:pre {:style {:font-size "13px" :line-height "20px"}} "nil"]
-       [item-editor inspector-id]])
+  (let [editable? (-> @state/INSPECTORS inspector-id :edit-types (vector/contains-item? :keyword))]
+       [:<> [header inspector-id {:label "nil"}]
+            (if editable? [toolbar inspector-id go-home-button go-up-button restore-item-button edit-item-button]
+                          [toolbar inspector-id go-home-button go-up-button restore-item-button])
+            [ugly-elements/label ::nil-item
+                                 {:color   :muted
+                                  :content "nil"}]
+            [item-editor inspector-id]]))
 
 (defn- unknown-item
   ; @ignore
@@ -387,8 +381,10 @@
   (let [inspected-item (env/get-inspected-item inspector-id)]
        [:<> [header  inspector-id {:label "unknown"}]
             [toolbar inspector-id go-home-button go-up-button remove-item-button]
-            [:pre {:style {:font-size "13px" :line-height "20px" :white-space "normal"}}
-                  (str inspected-item)]]))
+            [ugly-elements/label ::nil-item
+                                 {:color   :muted
+                                  :content (str inspected-item)
+                                  :style   {:white-space "normal"}}]]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -417,9 +413,13 @@
   ; By using the '{height: 100%}' and the '{display: flex}' settings on this element,
   ; the inspector's height is limited to its parent element's height
   ; and the '{overflow: scroll}' setting can make the inspector's content scrollable.
-  [:div {:class :atom-inspector :style {:display "flex" :flex-direction "column" :height "100%"}}
-        [import-styles]
-        [inspected-item inspector-id]])
+  [:<> [ugly-elements/import-styles]
+       [ugly-elements/column ::atom-inspector
+                             {:style   {:height "100%"}
+                              :content [inspected-item inspector-id]}]])
+
+        ; DEBUG
+        ; [:div (-> @state/INSPECTORS inspector-id (dissoc :ref) str)]
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -427,7 +427,15 @@
 (defn view
   ; @param (keyword)(opt) inspector-id
   ; @param (map) inspector-props
-  ; {:ref (atom)}
+  ; {:controls (keywords in vector)(opt)
+  ;   Default: [:edit-value :go-root :raw-view :remove-value :step-integer :swap-boolean :toggle-boolean]
+  ;  :edit-types (keywords in vector)(opt)
+  ;   Default: [:boolean :integer :keyword :map :nil :string :vector]
+  ;  :header (keywords in vector)(opt)
+  ;   Default: [:breadcrumbs :key-label :type-label]
+  ;  :initial-path (vector)(opt)
+  ;   Default: []
+  ;  :ref (atom)}
   ;
   ; @usage
   ; [atom-inspector {...}]
@@ -443,6 +451,8 @@
    [view (random/generate-keyword) inspector-props])
 
   ([inspector-id inspector-props]
-   (reagent/create-class {:reagent-render      (fn [] [atom-inspector inspector-id])
-                          :component-did-mount (fn [] (if-not (inspector-id @state/INSPECTORS)
-                                                              (swap! state/INSPECTORS assoc inspector-id inspector-props)))})))
+   (reagent/create-class {:reagent-render       (fn [] [atom-inspector inspector-id])
+                          :component-did-mount  (fn [] (if-not (inspector-id @state/INSPECTORS)
+                                                               (let [inspector-props (prototypes/inspector-props-prototype inspector-props)]
+                                                                    (side-effects/inspect-path! inspector-id (:initial-path inspector-props))
+                                                                    (swap! state/INSPECTORS assoc inspector-id inspector-props))))})))

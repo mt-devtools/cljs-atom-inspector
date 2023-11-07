@@ -10,44 +10,62 @@
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
 
+(defn inspect-path!
+  ; @description
+  ; ...
+  ;
+  ; @param (keyword) inspector-id
+  ; @param (vector) path
+  [inspector-id path]
+  (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path path}))
+
 (defn inspect-key!
-  ; @ignore
+  ; @description
+  ; - Steps into the given key of the currently inspected map item.
+  ; - Only map items are browsable in the inspector.
   ;
   ; @param (keyword) inspector-id
   ; @param (*) key
   [inspector-id key]
-  ; Steps into the given key of the currently inspected map item.
-  ; Only map items are browsable in the inspector.
   (let [inspected-path (env/get-inspected-path inspector-id)]
-       (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (conj inspected-path key)})))
+       (inspect-path! inspector-id (conj inspected-path key))))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
 
 (defn go-home!
   ; @ignore
   ;
-  ; @param (keyword) inspector-id
-  [inspector-id]
+  ; @description
   ; Resets the inspected path to an empty vector therefore the inspector steps back
   ; to the root level of the inspected atom.
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
   (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path []}))
 
 (defn go-up!
   ; @ignore
   ;
-  ; @param (keyword) inspector-id
-  [inspector-id]
+  ; @description
   ; Removes the last item of the inspected path, therefore the inspector steps back
   ; to the parent element of the currently inspected item.
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
   (let [inspected-path (env/get-inspected-path inspector-id)]
        (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path (vector/remove-last-item inspected-path)})))
 
 (defn update-inspected-item!
   ; @ignore
   ;
+  ; @description
+  ; Applies the given function and passing it the given params on the currently inspected item.
+  ;
   ; @param (keyword) inspector-id
   ; @param (function) f
   ; @param (list of *) params
   [inspector-id f & params]
-  ; Applies the given function and passing it the given params on the currently inspected item.
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         inspected-item (env/get-inspected-item inspector-id)
@@ -59,9 +77,11 @@
 (defn remove-inspected-item!
   ; @ignore
   ;
+  ; @description
+  ; Duplicates the inspected item into the bin, then removes the inspected item.
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  ; Duplicates the inspected item into the bin, then removes the inspected item.
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         inspected-item (env/get-inspected-item inspector-id)]
@@ -73,10 +93,12 @@
 (defn restore-inspected-item!
   ; @ignore
   ;
-  ; @param (keyword) inspector-id
-  [inspector-id]
+  ; @description
   ; Restores the removed item by using its backup copy stored under the bin.
   ; The inspector empties the bin when the inspected path changes!
+  ;
+  ; @param (keyword) inspector-id
+  [inspector-id]
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)
         removed-item   (get-in @state/INSPECTORS [inspector-id :meta-items :bin])]
@@ -88,6 +110,9 @@
 (defn toggle-raw-view!
   ; @ignore
   ;
+  ; @description
+  ; ...
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (swap! state/INSPECTORS update-in [inspector-id :meta-items :raw-view?] not))
@@ -95,22 +120,24 @@
 (defn toggle-edit-mode!
   ; @ignore
   ;
+  ; @description
+  ; ...
+  ;
   ; @param (keyword) inspector-id
   [inspector-id]
   (let [atom-ref       (env/get-atom-ref       inspector-id)
         inspected-path (env/get-inspected-path inspector-id)]
        (if-let [edit-mode? (env/edit-mode? inspector-id)]
 
-               ; When turning off the edit mode, the content of the textarea
-               ; parsed into a data structure by using the reader/string->mixed
-               ; function. After it is parsed, this function stores the (parsed) value
-               ; in the inspected atom.
-               ; In case of the parse is failed (e.g. syntax error in the edited copy)
-               ; the output of the 'pretty/string->mixed' function is a string.
+               ; When turning off the edit mode, the content of the textarea parsed into a data
+               ; structure by using the 'reader/read-edn' function. After it is parsed,
+               ; this function stores the (parsed) value in the inspected atom.
+               ; In case of the parse is failed (e.g., syntax error in the edited copy)
+               ; the output of the 'reader/read-edn' function is the original string.
                (let [edit-copy (env/get-edit-copy inspector-id)]
                     (if (env/root-level? inspector-id)
-                        (reset! atom-ref                         (reader/string->mixed edit-copy))
-                        (swap!  atom-ref assoc-in inspected-path (reader/string->mixed edit-copy))))
+                        (reset! atom-ref                         (reader/read-edn edit-copy))
+                        (swap!  atom-ref assoc-in inspected-path (reader/read-edn edit-copy))))
 
                ; When turning on the edit mode, it makes a copy of the inspected item
                ; (:edit-copy) and the textarea can change the copy, not the original item.

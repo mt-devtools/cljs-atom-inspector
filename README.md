@@ -23,6 +23,9 @@ You can track the changes of the <strong>cljs-atom-inspector</strong> library [h
 
 # Usage
 
+> Some parameters of the following functions and some further functions are not discussed in this file.
+  To learn more about the available functionality, check out the [functional documentation](documentation/COVER.md)!
+
 The [`atom-inspector.api/view`](documentation/cljs/atom-inspector/API.md#view)
 Reagent component displays the data stored in a Reagent atom and provides you
 tools to browse and edit the content of the atom.
