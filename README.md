@@ -42,12 +42,12 @@ tools to browse and edit the content of the atom.
 
 ### Browsing an atom:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview1.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview1.png?raw=true)
 
 ### Displaying the inspected path in raw mode:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview2.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview2.png?raw=true)
 
 ### Editing the content of the inspected path:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/images/preview3.png?raw=true)
+![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview3.png?raw=true)
