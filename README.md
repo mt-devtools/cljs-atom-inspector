@@ -12,13 +12,13 @@ browsing or editing ClojureScript atoms or Reagent atoms.
 ### deps.edn
 
 ```
-{:deps {bithandshake/cljs-atom-inspector {:git/url "https://github.com/bithandshake/cljs-atom-inspector"
-                                          :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}
+{:deps {monotech-tools/cljs-atom-inspector {:git/url "https://github.com/monotech-tools/cljs-atom-inspector"
+                                            :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}}
 ```
 
 ### Current version
 
-Check out the latest commit on the [release branch](https://github.com/bithandshake/cljs-atom-inspector/tree/release).
+Check out the latest commit on the [release branch](https://github.com/monotech-tools/cljs-atom-inspector/tree/release).
 
 ### Changelog
 
@@ -42,12 +42,12 @@ tools to browse and edit the content of the atom.
 
 ### Browsing an atom:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview1.png?raw=true)
+![preview](https://github.com/monotech-tools/cljs-atom-inspector/blob/release/resources/public/images/preview1.png?raw=true)
 
 ### Displaying the inspected path in raw mode:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview2.png?raw=true)
+![preview](https://github.com/monotech-tools/cljs-atom-inspector/blob/release/resources/public/images/preview2.png?raw=true)
 
 ### Editing the content of the inspected path:
 
-![preview](https://github.com/bithandshake/cljs-atom-inspector/blob/release/resources/public/images/preview3.png?raw=true)
+![preview](https://github.com/monotech-tools/cljs-atom-inspector/blob/release/resources/public/images/preview3.png?raw=true)
