@@ -140,4 +140,4 @@
   ; @return (vector)
   [inspector-id]
   (if-let [inspected-item (get-inspected-item inspector-id)]
-          (-> inspected-item map/get-keys vector/abc-items)))
+          (-> inspected-item map/keys vector/abc-items)))
