@@ -61,8 +61,8 @@
   ; @param (list of Reagent component symbols) buttons
   [inspector-id & buttons]
   [:<> [ugly-elements/row ::toolbar
-                          {:content (letfn [(f [%1 %2] (conj %1 [%2 inspector-id]))]
-                                           (reduce f [:<>] buttons))}]
+                          {:content (letfn [(f0 [%1 %2] (conj %1 [%2 inspector-id]))]
+                                           (reduce f0 [:<>] buttons))}]
        [ugly-elements/horizontal-line      {}]
        [ugly-elements/horizontal-separator {}]])
 
@@ -214,12 +214,12 @@
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
-  (letfn [(f [v] (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] v))]
+  (letfn [(f0 [v] (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] v))]
          (if-let [edit-mode? (env/edit-mode? inspector-id)]
                  (let [edit-copy (env/get-edit-copy inspector-id)]
                       [:<> [ugly-elements/horizontal-separator {:height :m}]
                            [ugly-elements/textarea ::item-editor
-                                                   {:on-change f
+                                                   {:on-change f0
                                                     :style     {:min-height "420px"}
                                                     :value     edit-copy}]]))))
 
@@ -250,8 +250,8 @@
                           [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button])
             [empty-item-label inspector-id]
             [:div {:style {:display "flex" :flex-direction "column" :overflow "scroll"}}
-                  (letfn [(f [%1 %2] (conj %1 [map-key inspector-id %2]))]
-                         (reduce f [:<>] map-keys))
+                  (letfn [(f0 [%1 %2] (conj %1 [map-key inspector-id %2]))]
+                         (reduce f0 [:<>] map-keys))
                   [raw-item    inspector-id]
                   [item-editor inspector-id]]]))
 
@@ -278,8 +278,8 @@
                           [toolbar inspector-id go-home-button go-up-button remove-item-button toggle-raw-view-button])
             [empty-item-label inspector-id]
             [:div {:style {:overflow "scroll"}}
-                  (letfn [(f [%1 %2] (conj %1 [vector-key inspector-id %2]))]
-                         (reduce f [:<>] inspected-item))
+                  (letfn [(f0 [%1 %2] (conj %1 [vector-key inspector-id %2]))]
+                         (reduce f0 [:<>] inspected-item))
                   [raw-item    inspector-id]
                   [item-editor inspector-id]]]))
 
