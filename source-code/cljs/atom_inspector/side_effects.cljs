@@ -37,7 +37,7 @@
   ; @ignore
   ;
   ; @description
-  ; Resets the inspected path to an empty vector therefore the inspector steps back
+  ; Resets the inspected path as an empty vector. Therefore, the inspector steps back
   ; to the root level of the inspected atom.
   ;
   ; @param (keyword) inspector-id
@@ -48,7 +48,7 @@
   ; @ignore
   ;
   ; @description
-  ; Removes the last item of the inspected path, therefore the inspector steps back
+  ; Removes the last item of the inspected path. Therefore, the inspector steps back
   ; to the parent element of the currently inspected item.
   ;
   ; @param (keyword) inspector-id
@@ -146,7 +146,7 @@
                (let [inspected-item (env/get-inspected-item inspector-id)
 
                      ; The 'pretty/string->mixed' function puts quote marks on strings!
-                     ; Therefore in case of the inspected item is a string, it's better
+                     ; Therefore, in case of the inspected item is a string, it's better
                      ; to not passing it the 'pretty/string->mixed' function to avoid duplicated quotes.
                      unparsed-item (if (string? inspected-item) inspected-item (pretty/mixed->string inspected-item))]
                     (swap! state/INSPECTORS assoc-in [inspector-id :meta-items :edit-copy] unparsed-item))))
