@@ -4,13 +4,13 @@
               [atom-inspector.prototypes   :as prototypes]
               [atom-inspector.side-effects :as side-effects]
               [atom-inspector.state        :as state]
-              [pretty.api                  :as pretty]
-              [random.api                  :as random]
+              [fruits.pretty.api           :as pretty]
+              [fruits.random.api           :as random]
+              [fruits.string.api           :as string]
+              [fruits.syntax.api           :as syntax]
+              [fruits.vector.api           :as vector]
               [reagent.core                :as reagent]
-              [string.api                  :as string]
-              [syntax.api                  :as syntax]
-              [ugly-elements.api           :as ugly-elements]
-              [vector.api                  :as vector]))
+              [ugly-elements.api           :as ugly-elements]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
