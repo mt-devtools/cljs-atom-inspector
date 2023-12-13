@@ -133,7 +133,7 @@
   ;
   ; @description
   ; When inspecting a map it can be browsed by its keys.
-  ; This function returns with the inspected map's keys (ordered in alphabetically).
+  ; This function returns the inspected map's keys (ordered in alphabetically).
   ;
   ; @param (keyword) inspector-id
   ;
