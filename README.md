@@ -20,6 +20,10 @@ browsing or editing ClojureScript atoms or Reagent atoms.
 
 Check out the latest commit on the [release branch](https://github.com/monotech-tools/cljs-atom-inspector/tree/release).
 
+### Documentation
+
+The <strong>cljs-atom-inspector</strong> functional documentation is [available here](https://mt-devtools.github.io/cljs-atom-inspector).
+
 ### Changelog
 
 You can track the changes of the <strong>cljs-atom-inspector</strong> library [here](CHANGES.md).
