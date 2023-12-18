@@ -12,7 +12,11 @@
 
 (defn inspect-path!
   ; @description
-  ; ...
+  ; - Steps into the given path within the atom.
+  ; - Only map items are browsable in the inspector.
+  ;
+  ; @usage
+  ; (inspect-path! :my-inspector [:my-item :my-subitem])
   ;
   ; @param (keyword) inspector-id
   ; @param (vector) path
@@ -21,8 +25,11 @@
 
 (defn inspect-key!
   ; @description
-  ; - Steps into the given key of the currently inspected map item.
+  ; - Steps into the given key of the currently inspected map item within the atom.
   ; - Only map items are browsable in the inspector.
+  ;
+  ; @usage
+  ; (inspect-key! :my-inspector :my-item)
   ;
   ; @param (keyword) inspector-id
   ; @param (*) key
@@ -37,8 +44,8 @@
   ; @ignore
   ;
   ; @description
-  ; Resets the inspected path as an empty vector. Therefore, the inspector steps back
-  ; to the root level of the inspected atom.
+  ; Resets the inspected path (as an empty vector). Therefore, the inspector steps
+  ; back to the root level of the inspected atom.
   ;
   ; @param (keyword) inspector-id
   [inspector-id]
@@ -60,7 +67,7 @@
   ; @ignore
   ;
   ; @description
-  ; Applies the given function and passing it the given params on the currently inspected item.
+  ; Applies the given function (and passing it the given params) on the currently inspected item.
   ;
   ; @param (keyword) inspector-id
   ; @param (function) f
@@ -94,7 +101,7 @@
   ; @ignore
   ;
   ; @description
-  ; Restores the removed item by using its backup copy stored under the bin.
+  ; Restores the removed item by using its backup copy stored in the bin.
   ; The inspector empties the bin when the inspected path changes!
   ;
   ; @param (keyword) inspector-id
@@ -129,20 +136,20 @@
         inspected-path (env/get-inspected-path inspector-id)]
        (if-let [edit-mode? (env/edit-mode? inspector-id)]
 
-               ; When turning off the edit mode, the content of the textarea parsed into a data
-               ; structure by using the 'reader/read-edn' function. After it is parsed,
-               ; this function stores the (parsed) value in the inspected atom.
-               ; In case the parse is failed (e.g., syntax error in the edited copy)
-               ; the output of the 'reader/read-edn' function is the original string.
+               ; - When turning off the edit mode, the content of the textarea gets parsed into
+               ;   a data structure by using the 'reader/read-edn' function.
+               ;   When it is parsed, this function stores the (parsed) value in the inspected atom.
+               ; - The output of the 'reader/read-edn' function is the original string in case the parse fails
+               ;   (e.g., syntax error in the edited copy).
                (let [edit-copy (env/get-edit-copy inspector-id)]
                     (if (env/root-level? inspector-id)
                         (reset! atom-ref                         (reader/read-edn edit-copy))
                         (swap!  atom-ref assoc-in inspected-path (reader/read-edn edit-copy))))
 
-               ; When turning on the edit mode, it makes a copy of the inspected item
-               ; (:edit-copy) and the textarea can change the copy, not the original item.
-               ; By using the 'pretty/mixed->string' function the item displayed in the textarea
-               ; in a well readable (pretty printed) way.
+               ; - When turning on the edit mode, it makes a copy of the inspected item
+               ;   (:edit-copy), and the textarea can change the copy and not the original item.
+               ; - The item is displayed in the textarea in a well readable (pretty printed) way,
+               ;   by using the 'pretty/mixed->string' function.
                (let [inspected-item (env/get-inspected-item inspector-id)
 
                      ; The 'pretty/string->mixed' function puts quote marks on strings!

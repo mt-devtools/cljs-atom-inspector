@@ -425,6 +425,9 @@
 ;; ----------------------------------------------------------------------------
 
 (defn view
+  ; @description
+  ; Displays the value of a Reagent atom and provides tools for browsing and editing.
+  ;
   ; @param (keyword)(opt) inspector-id
   ; @param (map) inspector-props
   ; {:controls (keywords in vector)(opt)
@@ -437,12 +440,23 @@
   ;   Default: []
   ;  :ref (atom)}
   ;
+  ; Browsing an atom:
+  ;
+  ; @preview (preview1.png)
+  ;
+  ; Displaying the inspected path in raw mode:
+  ;
+  ; @preview (preview2.png)
+  ;
+  ; Editing the content of the inspected path:
+  ;
+  ; @preview (preview3.png)
+  ;
   ; @usage
   ; [atom-inspector {...}]
   ;
   ; @usage
   ; [atom-inspector :my-inspector {...}]
-  ;
   ;
   ; @usage
   ; (def my-atom (atom {:my-key "My value"}))

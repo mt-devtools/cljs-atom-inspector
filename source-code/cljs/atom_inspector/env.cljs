@@ -24,7 +24,7 @@
 
 (defn get-inspected-path
   ; @description
-  ; Returns the inspected path. Always returns it as a vector even if it has no value yet.
+  ; Returns the currently inspected path.
   ;
   ; @param (keyword) inspector-id
   ;
@@ -37,7 +37,7 @@
 
 (defn get-inspected-item
   ; @description
-  ; Reads the inspected atom on the currently inspected path.
+  ; Returns the value that corresponds to the currently inspected path.
   ;
   ; @param (keyword) inspector-id
   ;
@@ -70,9 +70,9 @@
   ; @ignore
   ;
   ; @description
-  ; Returns TRUE if the inspected item editor turned on.
-  ; When the inspected path changes, the inspector always turns off the edit mode
-  ; and discards the unsaved changes (by deleting the meta items).
+  ; - Returns TRUE if the inspector is in edit mode.
+  ; - When the inspected path changes, the inspector turns off the edit mode and discards
+  ;   the unsaved changes (by deleting the meta items).
   ;
   ; @param (keyword) inspector-id
   ;
@@ -84,9 +84,8 @@
   ; @ignore
   ;
   ; @description
-  ; Returns TRUE if the inspected item displayed in raw mode too.
-  ; When the inspected path changes, the inspector always turns off the raw view
-  ; (by deleting the meta items).
+  ; - Returns TRUE if the inspected item is displayed in raw mode also.
+  ; - When the inspected path changes, the inspector turns off the raw view (by deleting the meta items).
   ;
   ; @param (keyword) inspector-id
   ;
@@ -98,15 +97,14 @@
   ; @ignore
   ;
   ; @description
-  ; Returns TRUE if the inspected item moved to the bin.
-  ; When the inspected path changes, the inspector always empties the bin
-  ; (by deleting the meta items).
+  ; - Returns TRUE if the inspected item has been moved to the bin.
+  ; - When the inspected path changes, the inspector empties the bin (by deleting the meta items).
   ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
   [inspector-id]
-  ; The deleted item could be a FALSE.
+  ; The deleted item might be a FALSE!
   (some? (get-in @state/INSPECTORS [inspector-id :meta-items :bin])))
 
 ;; ----------------------------------------------------------------------------
@@ -116,7 +114,7 @@
   ; @ignore
   ;
   ; @description
-  ; When editing an inspected item, the textarea doesn't change the item directly.
+  ; When editing the inspected item, the textarea doesn't change the item directly.
   ; It makes a copy of the item before start editing.
   ;
   ; @param (keyword) inspector-id
