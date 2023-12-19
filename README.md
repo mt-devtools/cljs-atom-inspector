@@ -6,7 +6,7 @@
 The <strong>cljs-atom-inspector</strong> is a simple ClojureScript tool for inspecting,
 browsing or editing ClojureScript atoms or Reagent atoms.
 
-> UI components in this library are Reagent components. Check out the [Reagent Project](https://github.com/reagent-project/reagent).
+> UI components in this library are [Reagent](https://github.com/reagent-project/reagent) components.
 
 ### deps.edn
 
