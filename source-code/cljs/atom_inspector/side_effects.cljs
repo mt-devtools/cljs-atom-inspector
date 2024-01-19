@@ -137,14 +137,14 @@
        (if-let [edit-mode? (env/edit-mode? inspector-id)]
 
                ; - When turning off the edit mode, the content of the textarea gets parsed into
-               ;   a data structure by using the 'reader/read-edn' function.
+               ;   a data structure by using the 'reader/parse-edn' function.
                ;   When it is parsed, this function stores the (parsed) value in the inspected atom.
-               ; - The output of the 'reader/read-edn' function is the original string in case the parse fails
+               ; - The output of the 'reader/parse-edn' function is the original string in case the parse fails
                ;   (e.g., syntax error in the edited copy).
                (let [edit-copy (env/get-edit-copy inspector-id)]
                     (if (env/root-level? inspector-id)
-                        (reset! atom-ref                         (reader/read-edn edit-copy))
-                        (swap!  atom-ref assoc-in inspected-path (reader/read-edn edit-copy))))
+                        (reset! atom-ref                         (reader/parse-edn edit-copy))
+                        (swap!  atom-ref assoc-in inspected-path (reader/parse-edn edit-copy))))
 
                ; - When turning on the edit mode, it makes a copy of the inspected item
                ;   (:edit-copy), and the textarea can change the copy and not the original item.
