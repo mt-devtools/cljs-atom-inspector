@@ -11,9 +11,11 @@
 ;; ----------------------------------------------------------------------------
 
 (defn inspect-path!
+  ; @important
+  ; Only map items are browsable in the inspector.
+  ;
   ; @description
-  ; - Steps into the given path within the atom.
-  ; - Only map items are browsable in the inspector.
+  ; Steps into the given path within the atom.
   ;
   ; @usage
   ; (inspect-path! :my-inspector [:my-item :my-subitem])
@@ -24,9 +26,11 @@
   (swap! state/INSPECTORS assoc-in [inspector-id :meta-items] {:inspected-path path}))
 
 (defn inspect-key!
+  ; @important
+  ; Only map items are browsable in the inspector.
+  ;
   ; @description
-  ; - Steps into the given key of the currently inspected map item within the atom.
-  ; - Only map items are browsable in the inspector.
+  ; Steps into the given key of the currently inspected map item within the atom.
   ;
   ; @usage
   ; (inspect-key! :my-inspector :my-item)

@@ -30,6 +30,8 @@
   ;
   ; @usage
   ; (get-inspected-path :my-inspector)
+  ; =>
+  ; [:my-item :my-subitem]
   ;
   ; @return (vector)
   [inspector-id]
