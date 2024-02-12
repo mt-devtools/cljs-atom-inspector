@@ -440,11 +440,9 @@
   ;   Default: []
   ;  :ref (atom)}
   ;
-  ; @preview (view1.png) Browsing an atom:
-  ;
-  ; @preview (view2.png) Displaying the inspected path in raw mode:
-  ;
-  ; @preview (view3.png) Editing the content of the inspected path:
+  ; @preview (view1.png) Browsing an atom
+  ; @preview (view2.png) Displaying the inspected path in raw mode
+  ; @preview (view3.png) Editing the content of the inspected path
   ;
   ; @usage
   ; [view {...}]
