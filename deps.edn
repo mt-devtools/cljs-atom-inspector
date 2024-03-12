@@ -1,7 +1,7 @@
 
 {:paths ["source-code/cljs"]
  :deps  {bithandshake/cljc-fruits  {:git/url "https://github.com/bithandshake/cljc-fruits"
-                                    :sha     "f0740253a2f7c1882de6e1d4cc3713a84522ee00"}
+                                    :sha     "3a6f92d20564942269bffff1f053a70f9bc6318f"}
          org.clojure/clojurescript {:mvn/version "1.10.891"}
          pretty-project/ugly-ui    {:git/url "http://github.com/pretty-project/ugly-ui"
                                     :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
