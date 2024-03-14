@@ -116,7 +116,7 @@
   ; @ignore
   ;
   ; @description
-  ; When editing the inspected item, the textarea doesn't change the item directly.
+  ; When editing the inspected item, the textarea does not change the item directly.
   ; It makes a copy of the item before start editing.
   ;
   ; @param (keyword) inspector-id
