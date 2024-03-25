@@ -1,8 +1,8 @@
 
 (ns atom-inspector.env
-    (:require [atom-inspector.state :as state]
-              [fruits.map.api       :as map]
-              [fruits.vector.api    :as vector]))
+    (:require [fruits.map.api       :as map]
+              [fruits.vector.api    :as vector]
+              [common-state.api :as common-state]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@
   ;
   ; @return (atom)
   [inspector-id]
-  (get-in @state/INSPECTORS [inspector-id :ref]))
+  (common-state/get-state :atom-inspector :inspectors inspector-id :ref))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -35,7 +35,7 @@
   ;
   ; @return (vector)
   [inspector-id]
-  (get-in @state/INSPECTORS [inspector-id :meta-items :inspected-path] []))
+  (or (common-state/get-state :atom-inspector :inspectors inspector-id :meta-items :inspected-path) []))
 
 (defn get-inspected-item
   ; @description
@@ -49,9 +49,50 @@
   ; @return (*)
   [inspector-id]
   (if-let [atom-ref (get-atom-ref inspector-id)]
-          (if-let [inspected-path (get-in @state/INSPECTORS [inspector-id :meta-items :inspected-path])]
-                  (get-in @atom-ref inspected-path)
-                  (->     @atom-ref))))
+          (let [inspected-path (get-inspected-path inspector-id)]
+               (get-in @atom-ref inspected-path))))
+
+(defn get-inspected-map-keys
+  ; @ignore
+  ;
+  ; @description
+  ; When inspecting a map it can be browsed by its keys.
+  ; This function returns the inspected map's keys (ordered in alphabetically).
+  ;
+  ; @param (keyword) inspector-id
+  ;
+  ; @return (vector)
+  [inspector-id]
+  (if-let [inspected-item (get-inspected-item inspector-id)]
+          (-> inspected-item map/keys vector/abc-items)))
+
+;; ----------------------------------------------------------------------------
+;; ----------------------------------------------------------------------------
+
+(defn get-bin
+  ; @ignore
+  ;
+  ; @description
+  ; Returns the inspector bin.
+  ;
+  ; @param (keyword) inspector-id
+  ;
+  ; @return (*)
+  [inspector-id]
+  (common-state/get-state :atom-inspector :inspectors inspector-id :meta-items :bin))
+
+(defn get-edit-copy
+  ; @ignore
+  ;
+  ; @description
+  ; When editing the inspected item, the textarea does not change the item directly.
+  ; It makes a copy of the item before start editing.
+  ;
+  ; @param (keyword) inspector-id
+  ;
+  ; @return (string)
+  [inspector-id]
+  (common-state/get-state :atom-inspector :inspectors inspector-id :meta-items :edit-copy))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
@@ -80,7 +121,7 @@
   ;
   ; @return (boolean)
   [inspector-id]
-  (get-in @state/INSPECTORS [inspector-id :meta-items :edit-mode?]))
+  (common-state/get-state :atom-inspector :inspectors inspector-id :meta-items :edit-mode?))
 
 (defn raw-view?
   ; @ignore
@@ -93,51 +134,18 @@
   ;
   ; @return (boolean)
   [inspector-id]
-  (get-in @state/INSPECTORS [inspector-id :meta-items :raw-view?]))
+  (common-state/get-state :atom-inspector :inspectors inspector-id :meta-items :raw-view?))
 
 (defn inspected-item-removed?
   ; @ignore
   ;
   ; @description
   ; - Returns TRUE if the inspected item has been moved to the bin.
-  ; - When the inspected path changes, the inspector empties the bin (by deleting the meta items).
+  ; - When the inspected path changes, the inspector empties the bin (when deleting the meta items).
   ;
   ; @param (keyword) inspector-id
   ;
   ; @return (boolean)
   [inspector-id]
-  ; The deleted item might be a FALSE!
-  (some? (get-in @state/INSPECTORS [inspector-id :meta-items :bin])))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn get-edit-copy
-  ; @ignore
-  ;
-  ; @description
-  ; When editing the inspected item, the textarea does not change the item directly.
-  ; It makes a copy of the item before start editing.
-  ;
-  ; @param (keyword) inspector-id
-  ;
-  ; @return (string)
-  [inspector-id]
-  (get-in @state/INSPECTORS [inspector-id :meta-items :edit-copy]))
-
-;; ----------------------------------------------------------------------------
-;; ----------------------------------------------------------------------------
-
-(defn get-inspected-map-keys
-  ; @ignore
-  ;
-  ; @description
-  ; When inspecting a map it can be browsed by its keys.
-  ; This function returns the inspected map's keys (ordered in alphabetically).
-  ;
-  ; @param (keyword) inspector-id
-  ;
-  ; @return (vector)
-  [inspector-id]
-  (if-let [inspected-item (get-inspected-item inspector-id)]
-          (-> inspected-item map/keys vector/abc-items)))
+  ; The deleted item can be a FALSE!
+  (some? (get-bin inspector-id)))
