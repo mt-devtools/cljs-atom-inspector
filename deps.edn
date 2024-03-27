@@ -5,6 +5,6 @@
          bithandshake/cljc-fruits     {:git/url "https://github.com/bithandshake/cljc-fruits"
                                        :sha     "d29c314aa255da9ab37db81122072b19ff59027e"}
          org.clojure/clojurescript    {:mvn/version "1.10.891"}
-         pretty-project/ugly-ui       {:git/url "http://github.com/pretty-project/ugly-ui"
-                                       :sha     "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+         pretty-project/ugly-ui       {:git/url "https://github.com/pretty-project/ugly-ui"
+                                       :sha     "4d70424f4f2650418f482a5cc43f9e07822a7667"}
          reagent/reagent              {:mvn/version "1.2.0"}}}
