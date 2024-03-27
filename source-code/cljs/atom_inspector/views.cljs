@@ -3,6 +3,7 @@
     (:require [atom-inspector.env          :as env]
               [atom-inspector.prototypes   :as prototypes]
               [atom-inspector.side-effects :as side-effects]
+              [common-state.api            :as common-state]
               [fruits.pretty.api           :as pretty]
               [fruits.random.api           :as random]
               [fruits.string.api           :as string]
@@ -10,8 +11,7 @@
               [fruits.vector.api           :as vector]
               [reagent.core                :as reagent]
               [ugly-elements.api           :as ugly-elements]
-              [ugly-styles.api :as ugly-styles]
-              [common-state.api :as common-state]))
+              [ugly-styles.api             :as ugly-styles]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

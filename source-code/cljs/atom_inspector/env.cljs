@@ -1,8 +1,8 @@
 
 (ns atom-inspector.env
-    (:require [fruits.map.api       :as map]
-              [fruits.vector.api    :as vector]
-              [common-state.api :as common-state]))
+    (:require [common-state.api  :as common-state]
+              [fruits.map.api    :as map]
+              [fruits.vector.api :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------

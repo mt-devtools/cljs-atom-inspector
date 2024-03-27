@@ -1,11 +1,11 @@
 
 (ns atom-inspector.side-effects
-    (:require [atom-inspector.env   :as env]
-              [fruits.map.api       :refer [dissoc-in]]
-              [fruits.pretty.api    :as pretty]
-              [fruits.reader.api    :as reader]
-              [fruits.vector.api    :as vector]
-              [common-state.api :as common-state]))
+    (:require [atom-inspector.env :as env]
+              [common-state.api   :as common-state]
+              [fruits.map.api     :refer [dissoc-in]]
+              [fruits.pretty.api  :as pretty]
+              [fruits.reader.api  :as reader]
+              [fruits.vector.api  :as vector]))
 
 ;; ----------------------------------------------------------------------------
 ;; ----------------------------------------------------------------------------
