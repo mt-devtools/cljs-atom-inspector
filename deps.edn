@@ -1,10 +1,10 @@
 
 {:paths ["source-code/cljs"]
  :deps  {mt-app-kit/cljc-common-state {:git/url "https://github.com/mt-app-kit/cljc-common-state"
-                                       :sha     "a352e86302adccfc0e8589c5d4fc36d46eda0171"}
+                                       :sha     "27db9d67b9232a4123c3f1bbd4c40afc8201a07e"}
          bithandshake/cljc-fruits     {:git/url "https://github.com/bithandshake/cljc-fruits"
-                                       :sha     "fa570cb14ff958b9dc3d16649ab14c21d113e655"}
+                                       :sha     "59968ce34d5d8a7b84855cf13e3da48783c621ef"}
          org.clojure/clojurescript    {:mvn/version "1.10.891"}
          pretty-project/ugly-ui       {:git/url "https://github.com/pretty-project/ugly-ui"
-                                       :sha     "f191b47e12507f04023b8d5aebcb31bb852f3322"}
+                                       :sha     "2cb2d7952543ec4f791516825f1198a8fa903594"}
          reagent/reagent              {:mvn/version "1.2.0"}}}
