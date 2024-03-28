@@ -17,3 +17,4 @@
 
 ; @redirect (atom-inspector.views/*)
 (def view views/view)
+ 
